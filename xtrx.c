@@ -178,8 +178,7 @@ MODULE_VERSION("0.1");
  * mmaped to userspce. Convertion DMA->PA->VA does the trick on that
  * platforms
  */
-
-#if defined(__arm__) || defined(__aarch64__)
+#ifdef CONFIG_CPU_RK3399
 #define VA_DMA_ADDR_FIXUP
 #endif
 
@@ -653,7 +652,7 @@ static int xtrx_allocdma(struct xtrx_dev *d, struct xtrx_dmabuf_nfo *pbufs, unsi
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 18, 0)
 		pbufs[i].virt = pci_alloc_consistent(d->pdev, buflen, &pbufs[i].phys);
 #else
-		pbufs[i].virt = dmam_alloc_coherent(&d->pdev->dev, buflen, &pbufs[i].phys, GFP_KERNEL);
+		pbufs[i].virt = dma_alloc_coherent(&d->pdev->dev, buflen, &pbufs[i].phys, GFP_KERNEL);
 #endif
 		if (!pbufs[i].virt) {
 			printk(KERN_INFO PFX "Failed to allocate %d DMA buffer", i);
@@ -1610,4 +1609,3 @@ static void __exit xtrx_cleanup(void)
 
 module_init(xtrx_init);
 module_exit(xtrx_cleanup);
-
