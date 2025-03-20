@@ -452,7 +452,7 @@ void xtrx_uart_do_rx(struct uart_port *port, unsigned* fifo_used)
 
 static void xtrx_uart_do_tx(struct uart_port *port, unsigned fifo_used)
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
 	struct circ_buf *xmit;
 #else
 	struct tty_port *tport;
@@ -474,7 +474,7 @@ static void xtrx_uart_do_tx(struct uart_port *port, unsigned fifo_used)
 		return;
 	}
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
 	xmit = &port->state->xmit;
 	if (uart_circ_empty(xmit))
 		goto txq_empty;
@@ -486,7 +486,7 @@ static void xtrx_uart_do_tx(struct uart_port *port, unsigned fifo_used)
 
 	max_count = port->fifosize - fifo_used;
 	while (max_count--) {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
 		unsigned int c;
 
 		c = xmit->buf[xmit->tail] & 0xff;
@@ -500,7 +500,7 @@ static void xtrx_uart_do_tx(struct uart_port *port, unsigned fifo_used)
 		xtrx_writel(dev, (port->line % XTRX_UART_NUM == XTRX_UART_LINE_GPS) ?
 					GP_PORT_WR_UART_TX : GP_PORT_WR_SIM_TX, c);
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 		port->icount.tx++;
 		if (uart_circ_empty(xmit))
@@ -508,7 +508,7 @@ static void xtrx_uart_do_tx(struct uart_port *port, unsigned fifo_used)
 #endif
 	}
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 10, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 		uart_write_wakeup(port);
 
